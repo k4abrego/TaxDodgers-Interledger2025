@@ -20,20 +20,20 @@ The project demonstrates how **Open Payments (Interledger API)** can integrate w
 
 TaxDodgers-Interledger2025/
 │
-├── server/                   # Backend logic (Intelli offline layer + API bridge)
-│   ├── client.js             # Creates authenticated Interledger client
-│   ├── grant.js              # Grant generation logic for data access
-│   ├── quote.js              # Quote creation and payment data retrieval
-│   └── server.js             # Local/offline server interface
+├── server/ # Backend logic (Intelli offline layer + API bridge)
+│ ├── client.js # Creates authenticated Interledger client
+│ ├── grant.js # Grant generation logic for data access
+│ ├── quote.js # Quote creation and payment data retrieval
+│ └── server.js # Local/offline server interface
 │
-├── app.vanilla.js            # Raspberry Pi UI logic (recording, modals, interaction)
-├── index.html                # Frontend entry point (HTML + font setup)
-├── styles.css                # Theme and layout for 800×480 touch screen
-├── preview.sh                # Local static server (Python3)
-├── private.key               # Interledger private key (⚠️ never commit publicly)
-├── .gitignore                # Ignoring private keys, build artifacts, DS_Store
-├── .gitattributes            # Git config for text normalization
-└── README.md                 # This documentation
+├── app.vanilla.js # Raspberry Pi UI logic (recording, modals, interaction)
+├── index.html # Frontend entry point (HTML + font setup)
+├── styles.css # Theme and layout for 800×480 touch screen
+├── preview.sh # Local static server (Python3)
+├── private.key # Interledger private key (⚠️ never commit publicly)
+├── .gitignore # Ignoring private keys, build artifacts, DS_Store
+├── .gitattributes # Git config for text normalization
+└── README.md # This documentation
 
 ````
 
