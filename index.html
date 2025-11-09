@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=800, initial-scale=1">
+<title>Raspberry Pi — Interfaz</title>
+<link rel="stylesheet" href="styles.css">
+
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script>
+const socket = io('http://localhost:3000');
+
+socket.on('connect', () => console.log('✅ Socket conectado:', socket.id));
+
+socket.on('wallet-match', (data) => {
+  console.log('💳 Wallet detectada:', data);
+  showWalletPopup(data);
+});
+
+socket.on('intelli-response', (data) => {
+  console.log('💬 Respuesta Intelli:', data.content);
+  showIntelliPopup(data);
+});
+
+function showWalletPopup(data) {
+  if (document.getElementById('wallet-popup')) return;
+  const popup = document.createElement('div');
+  popup.id = 'wallet-popup';
+  popup.style.position = 'fixed';
+  popup.style.top = '50%';
+  popup.style.left = '50%';
+  popup.style.transform = 'translate(-50%, -50%)';
+  popup.style.background = '#fff';
+  popup.style.padding = '24px 36px';
+  popup.style.borderRadius = '12px';
+  popup.style.boxShadow = '0 12px 30px rgba(0,0,0,0.25)';
+  popup.style.zIndex = 9999;
+  popup.innerHTML = `
+    <h3>✅ Cliente detectado</h3>
+    <p><strong>UID:</strong> ${data.uid}</p>
+    <p><strong>Cliente:</strong> ${data.publicName}</p>
+    <p>Se le cobrarán <strong>$${data.amountToCharge}</strong></p>
+    <button id="start-record" style="margin-top:12px;padding:8px 16px;border:none;border-radius:8px;background:#28a745;color:#fff;font-weight:700;cursor:pointer;">Iniciar Grabación</button>
+    <button id="close-popup" style="margin-top:12px;padding:8px 16px;border:none;border-radius:8px;background:#ff7a18;color:#fff;font-weight:700;cursor:pointer;">Cerrar</button>
+  `;
+  document.body.appendChild(popup);
+
+  document.getElementById('close-popup').addEventListener('click', () => popup.remove());
+
+  document.getElementById('start-record').addEventListener('click', async () => {
+    document.getElementById('start-record').disabled = true;
+    document.getElementById('start-record').innerText = "Procesando...";
+    await fetch(`/process-audio?uid=${data.uid}`, { method: 'POST' });
+    document.getElementById('start-record').innerText = "Iniciar Grabación";
+    document.getElementById('start-record').disabled = false;
+  });
+}
+
+function showIntelliPopup(data) {
+  if (document.getElementById('intelli-popup')) return;
+  const popup = document.createElement('div');
+  popup.id = 'intelli-popup';
+  popup.style.position = 'fixed';
+  popup.style.bottom = '20px';
+  popup.style.right = '20px';
+  popup.style.background = '#222';
+  popup.style.color = '#fff';
+  popup.style.padding = '16px 24px';
+  popup.style.borderRadius = '12px';
+  popup.style.boxShadow = '0 8px 20px rgba(0,0,0,0.25)';
+  popup.style.zIndex = 9999;
+  popup.innerHTML = `
+    <h4>💬 Respuesta de Intelli</h4>
+    <pre style="white-space:pre-wrap;">${data.content}</pre>
+    <button id="close-intelli" style="margin-top:8px;padding:6px 12px;border:none;border-radius:6px;background:#ff7a18;color:#fff;font-weight:700;cursor:pointer;">Cerrar</button>
+  `;
+  document.body.appendChild(popup);
+  document.getElementById('close-intelli').addEventListener('click', () => popup.remove());
+}
+</script>
+</head>
+<body>
+<div id="screen"><div id="root"></div></div>
+<script src="app.vanilla.js"></script>
+</body>
+</html>

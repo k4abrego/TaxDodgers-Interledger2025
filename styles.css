@@ -1,0 +1,232 @@
+:root{
+  --w:800px; --h:480px;
+  --bg-outer: #f0f4f6; 
+  --bg: #ffffff; 
+  --panel: #ffffff;
+  --accent-primary: #ff7a18; 
+  --accent-secondary: #0b5fa5; 
+  --muted: #4a5a60;
+  --txt: #07202a;
+  --help-bg: rgba(2,10,18,0.9);
+}
+
+html,body{height:100%;}
+body{
+  margin:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  /* Use Montserrat as requested; Slabo is included as secondary from the font link */
+  font-family: 'Montserrat', 'Slabo 13px', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  background: var(--bg-outer);
+  padding:10px;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+#screen{
+  width:var(--w);
+  height:var(--h);
+  background: var(--bg);
+  border-radius:8px;
+  box-shadow: 0 12px 30px rgba(10,30,50,0.12);
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+}
+
+#root{width:100%;height:100%;display:flex;align-items:stretch;}
+
+.card{
+  width:100%;
+  height:100%;
+  padding:20px 24px 18px 24px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:12px;
+}
+
+.panel {
+  width:100%;
+  height:100%;
+  background: var(--panel);
+  border-radius:10px;
+  box-shadow: 0 10px 30px rgba(12,30,60,0.06);
+  padding:18px 18px 14px 18px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+.title{
+  font-size:35px;
+  color:var(--txt);
+  font-weight:800;
+  margin-top:20px;
+  text-align:center;
+  letter-spacing:-0.6px;
+}
+
+.subtitle{
+  margin-top:20px;
+  font-size:16px;
+  color:var(--muted);
+  text-align:center;
+}
+
+.controls-row{
+  width:100%;
+  display:flex;
+  gap:18px;
+  justify-content:center;
+  margin-top:18px;
+}
+
+.center-action-wrap{width:100%;display:flex;justify-content:center;margin-top:16px}
+
+.btn{
+  min-width:300px;
+  height:60px;
+  border-radius:10px;
+  font-size:18px;
+  font-weight:800;
+  border:none;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  box-shadow: 0 8px 18px rgba(16,36,56,0.08);
+  transition:transform .12s ease, box-shadow .12s ease;
+}
+
+.btn:hover:not(.disabled){
+  transform:translateY(-2px);
+  box-shadow: 0 12px 26px rgba(16,36,56,0.12);
+}
+
+.btn svg{width:26px;height:26px}
+
+.btn.green{
+  background: linear-gradient(180deg,var(--accent-primary) 0%, #ff6a00 100%);
+  color: #fff;
+}
+
+.btn.blue{
+  background: linear-gradient(180deg,var(--accent-secondary) 0%, #0a4f90 100%);
+  color: #fff;
+}
+
+.btn.disabled{
+  background:#e6eef9;
+  color:#5b93c8;
+  box-shadow:none;
+  cursor:not-allowed;
+}
+
+.status{
+  font-size:16px;
+  color:var(--muted);
+  margin-top:16px;
+  font-weight:700;
+}
+
+.footer-links{
+  position:absolute;
+  bottom:28px;
+  width:100%;
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  font-size:15px;
+  color:var(--accent-secondary);
+}
+
+.footer-links a{
+  padding:8px 12px;
+  border-radius:8px;
+  background: rgba(11,95,165,0.06);
+  color:var(--accent-secondary);
+  text-decoration:none;
+  font-weight:700;
+}
+
+.report-modal{
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: rgba(2,10,18,0.6);
+  z-index:20;
+}
+.report-box{
+  width:720px;
+  max-width:92%;
+  background:#fff;
+  color:var(--txt);
+  border-radius:12px;
+  padding:18px 20px;
+  box-shadow: 0 20px 40px rgba(8,20,40,0.18);
+}
+.report-box h3{margin:0 0 12px 0;font-size:20px}
+.report-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eef5fb}
+.report-row .label{color:var(--muted)}
+.report-close{margin-top:12px;padding:8px 12px;border-radius:8px;background:var(--accent-primary);color:#fff;border:none}
+
+/* press indicator removed */
+
+.divider{width:1px;height:20px;background:#d6e9fb;border-radius:2px;opacity:0.9}
+
+
+.help-overlay{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: var(--help-bg);
+  color: #fff;
+  padding:22px;
+}
+.help-box{
+  max-width:720px;
+  background:transparent;
+  text-align:center;
+}
+.help-box h2{font-size:30px;margin-bottom:10px}
+.help-box p{font-size:20px;line-height:1.4}
+.help-close{margin-top:16px;padding:12px 18px;border-radius:8px;background:#fff;color:var(--txt);font-weight:700}
+
+@media (max-width:820px){
+  #screen{transform:scale(0.95)}
+}
+
+/* Header layout: center title and place help button at top-right corner */
+.header{
+  position:relative;
+  width:100%;
+  padding:10px 18px 4px 18px;
+  box-sizing:border-box;
+}
+.header-center{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:6px 80px; /* leave space for corner button */
+}
+.help-btn{
+  position:absolute;
+  top:12px;
+  right:18px;
+  min-width:90px;
+  height:40px;
+  padding:0 12px;
+  font-size:14px;
+  border-radius:10px;
+}
+
