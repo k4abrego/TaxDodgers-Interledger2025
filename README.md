@@ -1,42 +1,195 @@
-design_rasp — Raspberry Pi UI (vanilla frontend)
 
-This folder contains a small frontend prototype built for a 5" Raspberry Pi display (800×480).
-It was implemented in plain JavaScript and CSS so it can be copied to a Raspberry Pi and served without any build step. 
+```
+# TaxDodgers – Interledger 2025  
+### Intelligent Offline Payment & Voice System for Raspberry Pi
 
-Files inside: 
-- `index.html` — entry point. Loads fonts (Google Fonts by default) and `styles.css`.
-- `styles.css` — layout, theme and responsive CSS optimized for 800×480. 
-- `app.vanilla.js` — UI logic in vanilla JS: rendering, event handlers, simple state, help and report modals. 
-- `preview.sh` — small script to run a local static server for preview (uses `python3 -m http.server`).
+---
 
-How to preview -
+## Overview
 
-Quick method:
+**TaxDodgers** is an experimental **IoT payment and interaction system** developed for the **Interledger Hackathon 2025**.  
+It merges **voice interaction**, **offline authentication**, and **wearable NFC wristbands** into a secure, fully edge-ready platform powered by a **Raspberry Pi**.
 
-1. In a terminal, while located inside the `design_rasp` folder, run these commands:
+The project demonstrates how **Open Payments (Interledger API)** can integrate with **offline edge hardware** through our lightweight runtime **Intelli**, designed for optimal performance without network connectivity.
 
-`chmod +x preview.sh`   (only needed once)
+---
 
-`./preview.sh`
+## Project Structure
 
-This starts a static server on port 8001; open `http://localhost:8001` in your browser.
+```
 
-If that does not open the demo, try one of these alternatives (run from the `design_rasp` folder):
+TaxDodgers-Interledger2025/
+│
+├── server/                   # Backend logic (Intelli offline layer + API bridge)
+│   ├── client.js             # Creates authenticated Interledger client
+│   ├── grant.js              # Grant generation logic for data access
+│   ├── quote.js              # Quote creation and payment data retrieval
+│   └── server.js             # Local/offline server interface
+│
+├── app.vanilla.js            # Raspberry Pi UI logic (recording, modals, interaction)
+├── index.html                # Frontend entry point (HTML + font setup)
+├── styles.css                # Theme and layout for 800×480 touch screen
+├── preview.sh                # Local static server (Python3)
+├── private.key               # Interledger private key (⚠️ never commit publicly)
+├── .gitignore                # Ignoring private keys, build artifacts, DS_Store
+├── .gitattributes            # Git config for text normalization
+└── README.md                 # This documentation
 
-`python3 -m http.server 8001 --bind 127.0.0.1`  (explicit Python 3)
+````
 
-`python -m http.server 8001`  (if `python` is Python 3 on your system)
+---
 
-`npx http-server . -p 8001`  (Node alternative, needs Node/npm)
+## Raspberry Pi Interface
 
-Notes
-- If you run the static server on a remote machine (for example the Raspberry Pi), open the demo on another device using the Pi's IP address, e.g. `http://192.168.1.42:8001`.
-- If the page falls back to system fonts, your machine may be offline or blocking Google Fonts; see the Fonts note above to self-host fonts for offline use.
+The **Raspberry Pi UI** is a standalone front-end designed to run **directly on the Pi** — no build tools or internet connection required.
 
-The UI will try to fetch `/report?period=week` on the same origin. If no backend is available, the UI uses a fallback sample dataset.
+### Features:
+- **Touch interface** optimized for 800×480 px display  
+- **Start / Pause / Stop recording** using simple tactile buttons  
+- **Help and report modals** rendered dynamically  
+- **Voice recording lock:** voice input only activates after wristband authentication  
+- **Status indicators:**  
+  - `Ready` → `Recording...` → `Paused` → `Uploading...` → `Sent`  
 
-Notes:
-- Zero-dependency: there are no build steps and no node/npm requirements for the frontend.
-- Fonts: If you need offline deployment, download the Montserrat/Slabo font files and host them locally; then update `index.html`.
+Run locally:
+```bash
+cd TaxDodgers-Interledger2025
+python3 -m http.server 8001
+````
 
-Last updated: November 2025
+Then open `http://localhost:8001` or the Pi’s IP on another device.
+
+---
+
+## 🎙️ Voice & Wristband Interaction
+
+* Each **TaxDodgers wristband** contains an **NFC tag** that authenticates the user.
+* **Voice capture is disabled** until a valid wristband is scanned.
+* Once activated, the user can record short updates or responses directly through the Raspberry Pi microphone.
+* The voice data is processed **locally** by Intelli (no cloud dependency).
+
+> ⚠️ **Note:** External users cannot test this feature unless provided with a test wristband.
+> During demos, we’ll supply a working wristband with a test identity that enables full functionality.
+
+---
+
+## Interledger Integration Flow
+
+TaxDodgers uses the **Open Payments API** from the **Interledger network** for authenticated operations.
+
+### Authentication Sequence
+
+1. **Load the private key**
+
+   ```js
+   import fs from 'fs'
+   const privateKey = fs.readFileSync('private.key', 'utf-8')
+   ```
+
+2. **Create an authenticated client**
+
+   ```js
+   import { createAuthenticatedClient } from '@interledger/open-payments'
+
+   const client = await createAuthenticatedClient({
+     walletAddress: 'https://ilp.interledger-test.dev/mvr6',
+     privateKey,
+     keyId: 'your-key-id-here',
+   })
+   ```
+
+3. **Request a grant**
+
+   ```js
+   const grant = await client.grant.request(
+     { url: 'https://auth.interledger-test.dev/' },
+     {
+       access_token: {
+         access: [{ type: 'incoming-payment', actions: ['create'] }],
+       },
+     }
+   )
+   ```
+
+4. **Fetch or send data**
+
+   * Once the grant is active, data is retrieved from Interledger (quotes, balances, transactions).
+   * All communications are handled through the authenticated client instance.
+
+---
+
+## Intelli – Offline Runtime Layer
+
+**Intelli** is a micro-runtime that powers the offline logic on Raspberry Pi.
+It ensures smooth operation even without an internet connection.
+
+### Responsibilities:
+
+* Local caching of Interledger grants
+* Emulated backend routes for demo purposes
+* Real-time state updates for the UI
+* Voice preprocessing and classification
+* Simulated responses for stage presentation
+
+In demo mode, Intelli keeps the system fully functional **without online APIs**.
+
+---
+
+## Demo Mode & Stage Presentation
+
+During the Interledger 2025 demo:
+
+* The Pi runs Intelli offline.
+* When a wristband is scanned, it unlocks all features (voice, grant generation, local data sync).
+* The audience can interact live through the Pi’s touchscreen.
+* The UI and backend run seamlessly without network connectivity.
+
+> We will provide a **tester wristband** for judges and evaluators.
+> The system behaves exactly as the production setup — no internet required.
+
+---
+
+## Technology Stack
+
+| Component       | Technology                                    |
+| --------------- | --------------------------------------------- |
+| UI              | Vanilla JS, HTML5, CSS3                       |
+| Backend         | Node.js + Interledger Open Payments           |
+| Hardware        | Raspberry Pi 4 / 5" touchscreen display       |
+| Authentication  | Private key with Open Payments client         |
+| Voice Input     | Local microphone (activated by NFC wristband) |
+| Offline Runtime | Intelli Engine (custom lightweight layer)     |
+| Local Server    | Python3 or Node static server                 |
+
+---
+
+## Quick Setup (Developer Mode)
+
+```bash
+# Clone the repo
+git clone https://github.com/k4abrego/TaxDodgers-Interledger2025.git
+cd TaxDodgers-Interledger2025
+
+# Install dependencies for the backend
+cd server
+npm install
+
+# Run the local Intelli server
+node server.js
+
+# Preview the front-end
+cd ..
+python3 -m http.server 8001
+```
+
+---
+
+## License
+
+Open source for educational and demonstration purposes only.
+© 2025 — TaxDodgers Team (Interledger Hackathon)
+
+---
+
+> *Built with love for the Interledger 2025 Hackathon*
+> *Offline-first. Secure by design. Ready for the edge.*
